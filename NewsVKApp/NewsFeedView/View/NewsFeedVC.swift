@@ -7,7 +7,13 @@
 
 import UIKit
 
-class NewsFeedVC: UIViewController {
+protocol NewsFeedVCProtocol: AnyObject {
+    
+}
+
+class NewsFeedVC: UIViewController, NewsFeedVCProtocol  {
+    
+    var presenter: NewsFeedPresenterProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()

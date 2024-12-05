@@ -9,6 +9,7 @@
 xcuserdata/
 DerivedData/
 *.xcuserstate
+*.plist
 
 # Swift Package Manager
 .build/

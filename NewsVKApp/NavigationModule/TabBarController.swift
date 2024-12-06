@@ -22,7 +22,7 @@ class TabBarController: UITabBarController {
     
     private func setupTabItems() {
         
-        let newsFeedVC = UINavigationController(rootViewController: NewsFeedVC())
+        let newsFeedVC = UINavigationController(rootViewController: NewsFeedBuilder.build())
         newsFeedVC.tabBarItem.title = "Новости"
         newsFeedVC.tabBarItem.image = UIImage(systemName: "star")
         

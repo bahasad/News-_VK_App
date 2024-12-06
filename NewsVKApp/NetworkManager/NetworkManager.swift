@@ -25,7 +25,8 @@ class NetworkManager: NetworkServiceProtocol {
         urlComponents.host = "api.thenewsapi.com"
         urlComponents.path = "/v1/news/all"
         
-        urlComponents.queryItems = [ URLQueryItem(name: "api_token", value: "bqZeKyiP8mTUuy5DKfGLHNZuna6wtfLyrnZ77nEj") ]
+        urlComponents.queryItems = [ URLQueryItem(name: "api_token", value: "cZNaMjVdxl441OOeOsWsrA9QwhSom7rykLIpmIyK") ]//token with 8777432
+        //urlComponents.queryItems = [ URLQueryItem(name: "api_token", value: "bqZeKyiP8mTUuy5DKfGLHNZuna6wtfLyrnZ77nEj") ]//token with bak906
         
         guard let url = urlComponents.url else {
             throw CustomError.invalidURL
@@ -36,6 +37,11 @@ class NetworkManager: NetworkServiceProtocol {
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw CustomError.invalidResponse
+        }
+        
+        if response.statusCode != 200 {
+            print("HTTP Status Code: \(response.statusCode)")
             throw CustomError.invalidResponse
         }
         

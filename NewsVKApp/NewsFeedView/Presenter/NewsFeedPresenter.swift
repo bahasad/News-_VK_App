@@ -12,11 +12,12 @@ protocol NewsFeedPresenterProtocol: AnyObject {
     func getAllNews()
     func getNewsBySearchWord(searchWord: String)
     var news: [NewsFeedItems]? { get set }
+    func handleStarButtonTap(for newsItem: NewsFeedItems)
     
 }
 
 class NewsFeedPresenter: NewsFeedPresenterProtocol {
-    
+   
     weak var view: NewsFeedVCProtocol?
     let networkService: NetworkServiceProtocol
     var news: [NewsFeedItems]?
@@ -32,6 +33,9 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
             do {
                 news = try await networkService.fetchAllNews()
                 print("Fetched it: \(String(describing: news))")
+                DispatchQueue.main.async { [weak self] in
+                    self?.view?.updateNewsFeed(with: self?.news ?? [])
+                }
             } catch CustomError.invalidURL {
                 print("invalid URL")
             } catch CustomError.invalidResponse {
@@ -49,6 +53,9 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
             do {
                 news = try await networkService.fetchNewsBySearchWord(searchWord: searchWord)
                 print("Fetched it: \(String(describing: news))")
+                DispatchQueue.main.async { [weak self] in
+                    self?.view?.updateNewsFeed(with: self?.news ?? [])
+                }
             } catch CustomError.invalidURL {
                 print("invalid URL")
             } catch CustomError.invalidResponse {
@@ -59,6 +66,11 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
                 print("unexpected error")
             }
         }
+    }
+    
+    func handleStarButtonTap(for newsItem: NewsFeedItems) {
+        //add logic for saving to array to save in core data
+        print("Star button tapped in Presenter for news: \(newsItem.title)")
     }
     
     

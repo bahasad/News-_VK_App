@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1D930E8E2D01BF6E0011AD49 /* VKID in Frameworks */ = {isa = PBXBuildFile; productRef = 1D930E8D2D01BF6E0011AD49 /* VKID */; };
 		1D930E902D01BF6E0011AD49 /* VKIDCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1D930E8F2D01BF6E0011AD49 /* VKIDCore */; };
+		1DABA6462D0321EA00650148 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 1DABA6452D0321EA00650148 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DABA6462D0321EA00650148 /* Kingfisher in Frameworks */,
 				1D930E8E2D01BF6E0011AD49 /* VKID in Frameworks */,
 				1D930E902D01BF6E0011AD49 /* VKIDCore in Frameworks */,
 			);
@@ -87,6 +89,7 @@
 			packageProductDependencies = (
 				1D930E8D2D01BF6E0011AD49 /* VKID */,
 				1D930E8F2D01BF6E0011AD49 /* VKIDCore */,
+				1DABA6452D0321EA00650148 /* Kingfisher */,
 			);
 			productName = NewsVKApp;
 			productReference = 1D930D8A2D0081570011AD49 /* NewsVKApp.app */;
@@ -118,6 +121,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1D930E8C2D01BF6D0011AD49 /* XCRemoteSwiftPackageReference "vkid-ios-sdk" */,
+				1DABA6442D0321EA00650148 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1D930D8B2D0081570011AD49 /* Products */;
@@ -353,6 +357,14 @@
 				minimumVersion = 2.3.0;
 			};
 		};
+		1DABA6442D0321EA00650148 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.1.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -365,6 +377,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1D930E8C2D01BF6D0011AD49 /* XCRemoteSwiftPackageReference "vkid-ios-sdk" */;
 			productName = VKIDCore;
+		};
+		1DABA6452D0321EA00650148 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1DABA6442D0321EA00650148 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

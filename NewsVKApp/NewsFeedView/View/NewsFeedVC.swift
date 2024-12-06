@@ -8,10 +8,12 @@
 import UIKit
 
 protocol NewsFeedVCProtocol: AnyObject {
+    
     func updateNewsFeed(with data: [NewsFeedItems])
 }
 
 class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
+    
     
     var presenter: NewsFeedPresenterProtocol?
     let userNameSigned = "Имя пользователя"
@@ -63,33 +65,38 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
         return $0
     }(UISearchBar())
     
-    private lazy var collectionView: UICollectionView = {
-        
+    private lazy var headerLabel: UILabel = {
+        $0.font = UIFont.systemFont(ofSize: 34, weight: .bold)
+        $0.text = "Новости"
+        $0.numberOfLines = 0
         return $0
-    }(UICollectionView())
-
-
-
+    }(UILabel())
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        $0.color = .gray
+        $0.hidesWhenStopped = true
+        return $0
+    }(UIActivityIndicatorView(style: .large))
+    
+    private lazy var collectionView: UICollectionView = {
+        $0.delegate = self
+        $0.dataSource = self
+        $0.register(NewsFeedCollectionViewCell.self, forCellWithReuseIdentifier: NewsFeedCollectionViewCell.reuseId)
+        return $0
+    }(UICollectionView(frame: .zero, collectionViewLayout: setLayout()))
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        //        presenter?.getAllNews()
-        //        print(presenter?.news?.count as Any)
-        //        presenter?.news?.forEach({ item in
-        //            print(item.title)
-        //            print(item.imageUrl)
-        //            print(item.url)
-        //        })
-        
+        view.backgroundColor = .white
+        getAllItems()
         addSubviews()
         setConstraints()
+        
     }
     
     private func addSubviews() {
-        [userImage, userName, menuIcon, searchBar].forEach {
+        [ userImage, userName, menuIcon, searchBar, headerLabel, collectionView, activityIndicator ].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -117,35 +124,118 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
             searchBar.trailingAnchor.constraint(equalTo: menuIcon.trailingAnchor),
             searchBar.heightAnchor.constraint(equalToConstant: 40),
             
+            headerLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 25),
+            headerLabel.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor),
+            headerLabel.trailingAnchor.constraint(equalTo: searchBar.trailingAnchor),
+            
+            collectionView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 25),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
+    }
+    
+    private func getAllItems() {
+        showLoadingIndicator()
+        presenter?.getAllNews()
+        presenter?.news?.forEach({ item in
+            print(item.title)
+            print(item.description)
+        })
     }
     
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         print("Microphone button tapped!")
     }
     
+    func setLayout() -> UICollectionViewFlowLayout {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 20
+        layout.sectionInset = UIEdgeInsets(top: 10 , left: 10, bottom: 10, right: 10)
+        //layout.itemSize = CGSize(width: 100, height: 500)
+        let screenWidth = UIScreen.main.bounds.width
+        let cellWidth = (screenWidth - 50)
+        layout.itemSize = CGSize(width: cellWidth, height: 500)
+        
+        return layout
+    }
+    
+    private func showLoadingIndicator() {
+        DispatchQueue.main.async {
+            self.activityIndicator.startAnimating()
+            self.collectionView.isHidden = true
+        }
+    }
+    
+    private func hideLoadingIndicator() {
+        DispatchQueue.main.async {
+            self.activityIndicator.stopAnimating()
+            self.collectionView.isHidden = false
+        }
+    }
 }
 
 extension NewsFeedVC: UISearchBarDelegate {
-
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         print("Search text updated: \(searchText)")
     }
-
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text {
+            showLoadingIndicator()
             presenter?.getNewsBySearchWord(searchWord: searchText)
         }
         searchBar.resignFirstResponder()
     }
-
+    
 }
 
 extension NewsFeedVC {
     func updateNewsFeed(with data: [NewsFeedItems]) {
-        print("Received \(data.count) news items to display.")
-        //reload  collection view  when it implemented
+        print("Fetched \(data.count) news to display")
+        DispatchQueue.main.async {
+            self.hideLoadingIndicator()
+            self.collectionView.reloadData()
+        }
     }
 }
+
+extension NewsFeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let count = presenter?.news?.count ?? 0
+        if count == 0 {
+            print("No news available.")
+        }
+        return count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsFeedCollectionViewCell.reuseId, for: indexPath) as! NewsFeedCollectionViewCell
+        if let item = presenter?.news?[indexPath.row] {
+            cell.setCellData(item: item)
+        }
+        cell.delegate = self
+        return cell
+    }
+    
+    
+}
+extension NewsFeedVC: NewsFeedCollectionViewCellDelegate {
+    func didTapStarButton(on cell: NewsFeedCollectionViewCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        guard let newsItem = presenter?.news?[indexPath.row] else { return }
+        print("Star btn tapped in View Controller for news: \(newsItem.title)")
+        //here i need to pass this event to presenter
+        presenter?.handleStarButtonTap(for: newsItem)
+    }
+}
+//scrollview, bookmark, uiactivityindicator
 
 

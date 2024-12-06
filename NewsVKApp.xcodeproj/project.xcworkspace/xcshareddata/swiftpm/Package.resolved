@@ -1,6 +1,15 @@
 {
-  "originHash" : "9a5e5f95589e70b96a6972da44083c510165fd23ea979f5b811d93725bede97e",
+  "originHash" : "ac3088f83fc093d60ec2de41e3a0a8dc9a27bc99239f74e9dcd57a2ff950d7f2",
   "pins" : [
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher",
+      "state" : {
+        "revision" : "b6256f191b4c1d8d09f4df94bae69e5ac6e42c81",
+        "version" : "8.1.1"
+      }
+    },
     {
       "identity" : "vkid-ios-sdk",
       "kind" : "remoteSourceControl",

@@ -8,13 +8,8 @@
 import Foundation
 
 struct NewsFeedResponse: Codable {
-    //var meta: Meta
     var data: [NewsFeedItems]
 }
-
-//struct Meta: Codable {
-//    
-//}
 
 
 struct NewsFeedItems: Codable {

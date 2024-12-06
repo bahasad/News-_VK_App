@@ -7,10 +7,20 @@
 
 import Foundation
 
-struct NewsFeedItems: Codable {
-    var title: String
-    var desc: String
-    var header: String
-    var mainImage: String
+struct NewsFeedResponse: Codable {
+    //var meta: Meta
+    var data: [NewsFeedItems]
 }
 
+//struct Meta: Codable {
+//    
+//}
+
+
+struct NewsFeedItems: Codable {
+    var uuid: String
+    var title: String
+    var description: String
+    var url: String
+    var imageUrl: String
+}

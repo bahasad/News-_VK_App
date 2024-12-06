@@ -11,7 +11,8 @@ class NewsFeedBuilder {
     
     static func build() -> UIViewController {
         let view = NewsFeedVC()
-        let presenter = NewsFeedPresenter(view: view)
+        let networkService = NetworkManager()
+        let presenter = NewsFeedPresenter(view: view, networkService: networkService)
         view.presenter = presenter
         return view
     }

@@ -10,6 +10,7 @@ xcuserdata/
 DerivedData/
 *.xcuserstate
 *.plist
+.idea
 
 # Swift Package Manager
 .build/

@@ -25,6 +25,10 @@ class NewsFeedCollectionViewCell: UICollectionViewCell {
         return $0
     }(UIImageView())
     
+    lazy var webSiteLabel = Components.label(weight: .bold)
+    
+    lazy var dateLabel = Components.label(color: UIColor.appGreyForFontLabel)
+    
     lazy var titleLabel: UILabel = {
         $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         $0.numberOfLines = 0
@@ -41,6 +45,7 @@ class NewsFeedCollectionViewCell: UICollectionViewCell {
     
     lazy var starBtn: UIButton = {
         $0.setImage(UIImage(systemName: "star"), for: .normal)
+        $0.tintColor = .black
         $0.addTarget(self, action: #selector(starButtonTapped), for: .touchUpInside)
         return $0
     }(UIButton())
@@ -55,7 +60,7 @@ class NewsFeedCollectionViewCell: UICollectionViewCell {
     }
     
     private func setViews() {
-        [ imageView, titleLabel, descLabel, starBtn ].forEach {
+        [ imageView, webSiteLabel, dateLabel, titleLabel, descLabel, starBtn ].forEach {
             contentView.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -71,17 +76,24 @@ class NewsFeedCollectionViewCell: UICollectionViewCell {
             starBtn.widthAnchor.constraint(equalToConstant: 21),
             starBtn.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
             starBtn.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 15),
+            
+            
+            webSiteLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
+            webSiteLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 19),
+            
+            dateLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
+            dateLabel.leadingAnchor.constraint(equalTo: webSiteLabel.trailingAnchor, constant: 13),
+            
+            titleLabel.topAnchor.constraint(equalTo: webSiteLabel.bottomAnchor, constant: 10),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 19),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -19),
+            
             descLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             descLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 19),
             descLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -19),
             descLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -10)
         ])
     }
-    
-    
     
     func setCellData(item: NewsFeedItems) {
         if let url = URL(string: item.imageUrl) {
@@ -91,6 +103,8 @@ class NewsFeedCollectionViewCell: UICollectionViewCell {
         }
         titleLabel.text = item.title
         descLabel.text = item.description
+        webSiteLabel.text = Utilities.extractDomain(from: item.url)
+        dateLabel.text =  Utilities.formatDate(from: item.publishedAt)
     }
     
     @objc func starButtonTapped() {

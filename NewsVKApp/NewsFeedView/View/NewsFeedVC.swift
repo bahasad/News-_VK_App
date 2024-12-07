@@ -225,6 +225,12 @@ extension NewsFeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let selectedNewsItem = presenter?.news?[indexPath.row] else { return }
+        let detailsVC = NewsDetailsBuilder.build(newsItem: selectedNewsItem)
+        navigationController?.pushViewController(detailsVC, animated: true)
+    }
+    
     
 }
 extension NewsFeedVC: NewsFeedCollectionViewCellDelegate {

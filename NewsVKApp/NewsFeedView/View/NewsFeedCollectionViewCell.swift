@@ -8,15 +8,15 @@
 import UIKit
 import Kingfisher
 
-protocol NewsFeedCollectionViewCellDelegate: AnyObject {
+protocol CollectionViewCellDelegate: AnyObject {
     
-    func didTapStarButton(on cell: NewsFeedCollectionViewCell)
+    func didTapStarButton(on cell: CollectionViewCell)
 }
 
-class NewsFeedCollectionViewCell: UICollectionViewCell {
+class CollectionViewCell: UICollectionViewCell {
     
-    static var reuseId = "NewsFeedCollectionViewCell"
-    weak var delegate: NewsFeedCollectionViewCellDelegate?
+    static var reuseId = "CollectionViewCell"
+    weak var delegate: CollectionViewCellDelegate?
     
     lazy var imageView: UIImageView = {
         $0.contentMode = .scaleAspectFill

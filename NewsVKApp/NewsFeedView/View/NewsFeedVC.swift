@@ -81,7 +81,7 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     private lazy var collectionView: UICollectionView = {
         $0.delegate = self
         $0.dataSource = self
-        $0.register(NewsFeedCollectionViewCell.self, forCellWithReuseIdentifier: NewsFeedCollectionViewCell.reuseId)
+        $0.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseId)
         return $0
     }(UICollectionView(frame: .zero, collectionViewLayout: setLayout()))
     
@@ -217,7 +217,7 @@ extension NewsFeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsFeedCollectionViewCell.reuseId, for: indexPath) as! NewsFeedCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseId, for: indexPath) as! CollectionViewCell
         if let item = presenter?.news?[indexPath.row] {
             cell.setCellData(item: item)
         }
@@ -233,8 +233,8 @@ extension NewsFeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
     
     
 }
-extension NewsFeedVC: NewsFeedCollectionViewCellDelegate {
-    func didTapStarButton(on cell: NewsFeedCollectionViewCell) {
+extension NewsFeedVC: CollectionViewCellDelegate {
+    func didTapStarButton(on cell: CollectionViewCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         guard let newsItem = presenter?.news?[indexPath.row] else { return }
         print("Star btn tapped in View Controller for news: \(newsItem.title)")

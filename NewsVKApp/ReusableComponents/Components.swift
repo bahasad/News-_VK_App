@@ -8,6 +8,7 @@
 import UIKit
 
 class Components {
+    
     static func label(size: CGFloat = 14, weight: UIFont.Weight = .light, color: UIColor = .black, textAlignment: NSTextAlignment = .left) -> UILabel {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: size, weight: weight)

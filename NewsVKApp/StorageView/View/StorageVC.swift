@@ -7,7 +7,13 @@
 
 import UIKit
 
-class StorageVC: UIViewController {
+protocol StorageVCProtocol: AnyObject {
+    
+}
+
+class StorageVC: UIViewController, StorageVCProtocol {
+    
+    var presenter: StoragePresenterProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()

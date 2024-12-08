@@ -220,7 +220,9 @@ extension NewsFeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseId, for: indexPath) as! CollectionViewCell
         if let item = presenter?.news?[indexPath.row] {
             cell.setCellData(item: item)
+            cell.starBtn.isBookmarked = presenter?.fetchAllFavouriteNews().contains(where: {$0.id == item.uuid}) ?? false
         }
+        
         cell.delegate = self
         return cell
     }
@@ -240,8 +242,11 @@ extension NewsFeedVC: CollectionViewCellDelegate {
         print("Star btn tapped in View Controller for news: \(newsItem.title)")
         //here i need to pass this event to presenter
         presenter?.handleStarButtonTap(for: newsItem)
+        //here I need to toggle state of the star btn
+        let isBookmarked = cell.starBtn.isBookmarked
+        cell.starBtn.isBookmarked = !isBookmarked
     }
 }
-//scrollview, bookmark, uiactivityindicator
+//scrollview, - to do item (for the whole page to be scrollabel, not only the collection view!
 
 

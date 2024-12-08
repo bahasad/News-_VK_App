@@ -11,10 +11,12 @@ import Foundation
 protocol StoragePresenterProtocol: AnyObject {
     
     init(view: StorageVCProtocol, dataManager: DataManager)
+    func fetchAllFavouriteNews() -> [SavedNews]
     
 }
 
 class StoragePresenter: StoragePresenterProtocol {
+    
     
     weak var view: StorageVCProtocol?
     let dataManager: DataManager
@@ -23,6 +25,12 @@ class StoragePresenter: StoragePresenterProtocol {
         self.view = view
         self.dataManager = dataManager
     }
+    
+    func fetchAllFavouriteNews() -> [SavedNews] {
+        return dataManager.fetchAllFavouriteNews()
+    }
+    
+    
     
 }
 

@@ -8,14 +8,13 @@
 import Foundation
 
 protocol NewsFeedPresenterProtocol: AnyObject {
+    
     init(view: NewsFeedVCProtocol, networkService: NetworkServiceProtocol, dataManager: DataManager)
     func getAllNews()
     func getNewsBySearchWord(searchWord: String)
     var news: [NewsFeedItems]? { get set }
     func handleStarButtonTap(for newsItem: NewsFeedItems)
-    
-    func deleteFavouriteNewsItem(newsItem: SavedNews)
-    func saveFavouriteNews(newsItem: NewsFeedItems)
+    func fetchAllFavouriteNews() -> [SavedNews]
     
 }
 
@@ -74,20 +73,25 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
     }
     
     func handleStarButtonTap(for newsItem: NewsFeedItems) {
-        //add logic for saving to array to save in core data
-        print("Star button tapped in Presenter for news: \(newsItem.title)")
+        let savedNews = dataManager.fetchAllFavouriteNews()
+        if let savedItem = savedNews.first(where: { $0.id == newsItem.uuid }) {
+            savedItem.deleteFavouriteNews()
+            print("Bookmark removed for item: \(newsItem.title)")
+        } else {
+            dataManager.saveNews(newsItem: newsItem)
+            print("Bookmark added for item: \(newsItem.title)")
+        }
+        DispatchQueue.main.async { [weak self] in
+            self?.view?.updateNewsFeed(with: self?.news ?? [])
+        }
     }
   
 }
 
 extension NewsFeedPresenter {
     
-    func deleteFavouriteNewsItem(newsItem: SavedNews) {
-        newsItem.deleteFavouriteNews()
-    }
-    
-    func saveFavouriteNews(newsItem: NewsFeedItems) {
-        dataManager.saveNews(newsItem: newsItem)
+    func fetchAllFavouriteNews() -> [SavedNews] {
+        return dataManager.fetchAllFavouriteNews()
     }
     
 }

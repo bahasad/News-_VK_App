@@ -43,12 +43,17 @@ class CollectionViewCell: UICollectionViewCell {
         return $0
     }(UILabel())
     
-    lazy var starBtn: UIButton = {
-        $0.setImage(UIImage(systemName: "star"), for: .normal)
-        $0.tintColor = .black
-        $0.addTarget(self, action: #selector(starButtonTapped), for: .touchUpInside)
-        return $0
-    }(UIButton())
+    lazy var starBtn: BookmarkButton = {
+        let button = BookmarkButton(tintColor: .black)
+            button.addTarget(self, action: #selector(starButtonTapped), for: .touchUpInside)
+            return button
+    }()
+    
+    var isBookmarked: Bool = false {
+        didSet {
+            starBtn.isBookmarked = isBookmarked
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -57,6 +62,13 @@ class CollectionViewCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 20
         setViews()
         setConstraints()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.kf.cancelDownloadTask()
+        imageView.image = nil
+        starBtn.isBookmarked = false
     }
     
     private func setViews() {
@@ -72,8 +84,8 @@ class CollectionViewCell: UICollectionViewCell {
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
-            starBtn.heightAnchor.constraint(equalToConstant: 21),
-            starBtn.widthAnchor.constraint(equalToConstant: 21),
+            starBtn.heightAnchor.constraint(equalToConstant: 25),
+            starBtn.widthAnchor.constraint(equalToConstant: 25),
             starBtn.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
             starBtn.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             

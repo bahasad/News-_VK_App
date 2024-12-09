@@ -2,7 +2,7 @@
 //  SavedNews+CoreDataProperties.swift
 //  NewsVKApp
 //
-//  Created by Baha Sadyr on 12/8/24.
+//  Created by Baha Sadyr on 12/9/24.
 //
 //
 
@@ -22,12 +22,13 @@ extension SavedNews {
         return NSFetchRequest<SavedNews>(entityName: "SavedNews")
     }
 
-    @NSManaged public var id: String?
-    @NSManaged public var title: String?
     @NSManaged public var desc: String?
-    @NSManaged public var url: String?
+    @NSManaged public var id: String?
     @NSManaged public var imageUrl: String?
     @NSManaged public var publishedAt: String?
+    @NSManaged public var title: String?
+    @NSManaged public var url: String?
+    @NSManaged public var pathToImage: String?
 
 }
 

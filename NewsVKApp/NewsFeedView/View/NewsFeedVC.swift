@@ -221,6 +221,11 @@ extension NewsFeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseId, for: indexPath) as! CollectionViewCell
         if let item = presenter?.news?[indexPath.row] {
             cell.setCellData(item: item)
+            let imageUrl = item.imageUrl
+            presenter?.fetchImage(for: imageUrl) { [weak self] data in
+                guard let self = self, let imageData = data, let image = UIImage(data: imageData) else { return }
+                cell.imageView.image = image
+            }
             cell.starBtn.isBookmarked = presenter?.fetchAllFavouriteNews().contains(where: {$0.id == item.uuid}) ?? false
         }
         

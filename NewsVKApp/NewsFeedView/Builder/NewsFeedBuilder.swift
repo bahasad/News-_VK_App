@@ -13,7 +13,8 @@ class NewsFeedBuilder {
         let view = NewsFeedVC()
         let networkService = NetworkManager()
         let dataManager = DataManager()
-        let presenter = NewsFeedPresenter(view: view, networkService: networkService, dataManager: dataManager)
+        let imageCacheManager = ImageCacheManager.shared
+        let presenter = NewsFeedPresenter(view: view, networkService: networkService, dataManager: dataManager, imageCacheManager: imageCacheManager)
         view.presenter = presenter
         return view
     }

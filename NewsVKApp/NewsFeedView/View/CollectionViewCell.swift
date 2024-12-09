@@ -45,8 +45,8 @@ class CollectionViewCell: UICollectionViewCell {
     
     lazy var starBtn: BookmarkButton = {
         let button = BookmarkButton(tintColor: .black)
-            button.addTarget(self, action: #selector(starButtonTapped), for: .touchUpInside)
-            return button
+        button.addTarget(self, action: #selector(starButtonTapped), for: .touchUpInside)
+        return button
     }()
     
     var isBookmarked: Bool = false {
@@ -108,15 +108,17 @@ class CollectionViewCell: UICollectionViewCell {
     }
     
     func setCellData(item: NewsFeedItems) {
-        if let url = URL(string: item.imageUrl) {
-            imageView.kf.setImage(with: url, placeholder: UIImage(named: "404notFound"))
-        } else {
-            imageView.image = UIImage(named: "imageForPlaceholder")
-        }
+        //        if let url = URL(string: item.imageUrl) {
+        //            imageView.kf.setImage(with: url, placeholder: UIImage(named: "404notFound"))
+        //        } else {
+        //            imageView.image = UIImage(named: "imageForPlaceholder")
+        //        }
         titleLabel.text = item.title
         descLabel.text = item.description
         webSiteLabel.text = Utilities.extractDomain(from: item.url)
         dateLabel.text =  Utilities.formatDate(from: item.publishedAt)
+        imageView.image = UIImage(systemName: "photo")
+        
     }
     
     @objc func starButtonTapped() {

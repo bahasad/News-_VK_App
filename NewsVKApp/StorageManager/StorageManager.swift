@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  StorageManager.swift
 //  NewsVKApp
 //
 //  Created by Baha Sadyr on 12/9/24.

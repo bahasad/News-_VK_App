@@ -15,6 +15,18 @@ class StorageVC: UIViewController, StorageVCProtocol {
     
     var presenter: StoragePresenterProtocol?
     
+    
+    let layout = UICollectionViewFlowLayout.createLayout()
+    
+    private lazy var collectionView: UICollectionView = {
+        $0.delegate = self
+        $0.dataSource = self
+        $0.register(StorageCollectionViewCell.self, forCellWithReuseIdentifier: StorageCollectionViewCell.reuseId)
+        $0.register(StorageHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: StorageHeaderView.reuseId)
+        return $0
+    }(UICollectionView(frame: view.frame, collectionViewLayout: layout))
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -23,29 +35,21 @@ class StorageVC: UIViewController, StorageVCProtocol {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-            collectionView.reloadData()
-        }
+        super.viewWillAppear(animated)
+        collectionView.reloadData()
+    }
     
-    let layout = UICollectionViewFlowLayout.createLayout()
     
-    private lazy var collectionView: UICollectionView = {
-        $0.delegate = self
-        $0.dataSource = self
-        $0.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseId)
-        $0.register(StorageHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: StorageHeaderView.reuseId)
-        return $0
-    }(UICollectionView(frame: view.frame, collectionViewLayout: layout))
-
 }
 
-extension StorageVC: UICollectionViewDelegate, UICollectionViewDataSource {
+extension StorageVC:  UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         presenter?.fetchAllFavouriteNews().count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseId, for: indexPath) as! CollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: StorageCollectionViewCell.reuseId, for: indexPath) as! StorageCollectionViewCell
         let items = presenter?.fetchAllFavouriteNews()
         let item = items?[indexPath.row]
         cell.titleLabel.text = item?.title
@@ -57,6 +61,7 @@ extension StorageVC: UICollectionViewDelegate, UICollectionViewDataSource {
         } else {
             cell.imageView.image = UIImage(named: "imageForPlaceholder")
         }
+        cell.delegate = self
         return cell
     }
     
@@ -67,7 +72,31 @@ extension StorageVC: UICollectionViewDelegate, UICollectionViewDataSource {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: StorageHeaderView.reuseId, for: indexPath) as! StorageHeaderView
         return header
     }
+}
+extension StorageVC: StorageCollectionViewCellDelegate {
     
-    
+    func didTapStarButton(on cell: StorageCollectionViewCell) {
+        guard let indexPath = collectionView.indexPath(for: cell),
+              let savedNews = presenter?.fetchAllFavouriteNews()[indexPath.row] else { return }
+        presenter?.deleteFavouriteNews(newsItem: savedNews)
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+    }
 }
 
+extension StorageVC: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let savedNews = presenter?.fetchAllFavouriteNews()[indexPath.row] else { return }
+        let newsItem = NewsFeedItems(
+            uuid: savedNews.id ?? "",
+            title: savedNews.title ?? "",
+            description: savedNews.desc ?? "",
+            url: savedNews.url ?? "",
+            imageUrl: savedNews.imageUrl ?? "",
+            publishedAt: savedNews.publishedAt ?? ""
+        )
+        let detailsVC = NewsDetailsBuilder.build(newsItem: newsItem)
+        navigationController?.pushViewController(detailsVC, animated: true)
+    }
+}

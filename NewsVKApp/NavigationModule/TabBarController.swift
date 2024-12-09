@@ -30,7 +30,7 @@ class TabBarController: UITabBarController {
         errorNilVKVC.tabBarItem.title = "Error Nil Vk"
         errorNilVKVC.tabBarItem.image = UIImage(named: "errorNilVk")
         
-        let storageVC = UINavigationController(rootViewController:StorageViewBuilder.build())
+        let storageVC = UINavigationController(rootViewController:StorageBuilder.build())
         storageVC.tabBarItem.title = "Хранилище"
         storageVC.tabBarItem.image = UIImage(systemName: "star.fill")
   

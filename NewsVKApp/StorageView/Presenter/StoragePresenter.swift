@@ -12,14 +12,16 @@ protocol StoragePresenterProtocol: AnyObject {
     
     init(view: StorageVCProtocol, dataManager: DataManager)
     func fetchAllFavouriteNews() -> [SavedNews]
+    var news: [NewsFeedItems]? { get set }
+    func deleteFavouriteNews(newsItem: SavedNews)
     
 }
 
 class StoragePresenter: StoragePresenterProtocol {
     
-    
     weak var view: StorageVCProtocol?
     let dataManager: DataManager
+    var news: [NewsFeedItems]?
     
     required init(view: StorageVCProtocol, dataManager: DataManager) {
         self.view = view
@@ -28,6 +30,12 @@ class StoragePresenter: StoragePresenterProtocol {
     
     func fetchAllFavouriteNews() -> [SavedNews] {
         return dataManager.fetchAllFavouriteNews()
+    }
+    
+    
+    func deleteFavouriteNews(newsItem: SavedNews) {
+        newsItem.deleteFavouriteNews()
+        print("Deleted item: \(newsItem.title ?? "unknown") from storage")
     }
     
     

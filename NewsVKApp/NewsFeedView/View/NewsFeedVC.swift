@@ -197,6 +197,7 @@ extension NewsFeedVC: UISearchBarDelegate {
 }
 
 extension NewsFeedVC {
+    
     func updateNewsFeed(with data: [NewsFeedItems]) {
         print("Fetched \(data.count) news to display")
         DispatchQueue.main.async {

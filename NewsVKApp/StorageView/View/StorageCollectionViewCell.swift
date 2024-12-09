@@ -1,59 +1,43 @@
 //
-//  NewsFeedCollectionViewCell.swift
+//  StorageCollectionViewCell.swift
 //  NewsVKApp
 //
-//  Created by Baha Sadyr on 12/6/24.
+//  Created by Baha Sadyr on 12/9/24.
 //
+
 
 import UIKit
 import Kingfisher
 
-protocol CollectionViewCellDelegate: AnyObject {
+
+protocol StorageCollectionViewCellDelegate: AnyObject {
     
-    func didTapStarButton(on cell: CollectionViewCell)
+    func didTapStarButton(on cell: StorageCollectionViewCell)
 }
 
-class CollectionViewCell: UICollectionViewCell {
+
+class StorageCollectionViewCell: UICollectionViewCell {
     
-    static var reuseId = "CollectionViewCell"
-    weak var delegate: CollectionViewCellDelegate?
+    static var reuseId = "StorageCollectionViewCell"
     
-    lazy var imageView: UIImageView = {
-        $0.contentMode = .scaleAspectFill
-        $0.clipsToBounds = true
-        $0.layer.cornerRadius = 20
-        return $0
-    }(UIImageView())
+    weak var delegate: StorageCollectionViewCellDelegate?
+    
+    lazy var imageView = Components.imageView(cornerRadius: 20)
     
     lazy var webSiteLabel = Components.label(weight: .bold)
     
     lazy var dateLabel = Components.label(color: UIColor.appGreyForFontLabel)
     
-    lazy var titleLabel: UILabel = {
-        $0.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        $0.numberOfLines = 0
-        $0.textAlignment = .left
+    lazy var titleLabel = Components.label(size: 29, weight: .bold, textAlignment: .left)
+    
+    lazy var descLabel = Components.label(size: 16, weight: .light, textAlignment: .left)
+    
+    lazy var starBtn: UIButton = {
+        $0.tintColor = UIColor.black
+        $0.setImage( UIImage(systemName: "star.fill"), for: .normal)
+        $0.addTarget(self, action: #selector(starButtonTapped), for: .touchUpInside)
         return $0
-    }(UILabel())
-    
-    lazy var descLabel: UILabel = {
-        $0.font = UIFont.systemFont(ofSize: 16, weight: .light)
-        $0.numberOfLines = 0
-        $0.textAlignment = .left
-        return $0
-    }(UILabel())
-    
-    lazy var starBtn: BookmarkButton = {
-        let button = BookmarkButton(tintColor: .black)
-            button.addTarget(self, action: #selector(starButtonTapped), for: .touchUpInside)
-            return button
-    }()
-    
-    var isBookmarked: Bool = false {
-        didSet {
-            starBtn.isBookmarked = isBookmarked
-        }
-    }
+    }(UIButton())
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,13 +46,6 @@ class CollectionViewCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 20
         setViews()
         setConstraints()
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageView.kf.cancelDownloadTask()
-        imageView.image = nil
-        starBtn.isBookmarked = false
     }
     
     private func setViews() {
@@ -84,11 +61,11 @@ class CollectionViewCell: UICollectionViewCell {
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             imageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
+            
             starBtn.heightAnchor.constraint(equalToConstant: 25),
             starBtn.widthAnchor.constraint(equalToConstant: 25),
             starBtn.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
             starBtn.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
             
             webSiteLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
             webSiteLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 19),
@@ -106,24 +83,23 @@ class CollectionViewCell: UICollectionViewCell {
             descLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -10)
         ])
     }
-    
-    func setCellData(item: NewsFeedItems) {
-        if let url = URL(string: item.imageUrl) {
+ 
+    func setCellData(item: SavedNews) {
+        
+        titleLabel.text = item.title
+        descLabel.text = item.desc
+        dateLabel.text = Utilities.formatDate(from: item.publishedAt)
+        webSiteLabel.text = Utilities.extractDomain(from: item.url)
+        if let url = URL(string: item.imageUrl ?? "") {
             imageView.kf.setImage(with: url, placeholder: UIImage(named: "404notFound"))
         } else {
             imageView.image = UIImage(named: "imageForPlaceholder")
         }
-        titleLabel.text = item.title
-        descLabel.text = item.description
-        webSiteLabel.text = Utilities.extractDomain(from: item.url)
-        dateLabel.text =  Utilities.formatDate(from: item.publishedAt)
     }
     
     @objc func starButtonTapped() {
         delegate?.didTapStarButton(on: self)
     }
-    
-    
     
     
     
@@ -134,4 +110,6 @@ class CollectionViewCell: UICollectionViewCell {
     
     
 }
+
+
 

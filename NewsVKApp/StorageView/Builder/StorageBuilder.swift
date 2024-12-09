@@ -7,7 +7,7 @@
 
 import UIKit
 
-class StorageViewBuilder {
+class StorageBuilder {
     
     static func build() -> UIViewController {
         let view = StorageVC()

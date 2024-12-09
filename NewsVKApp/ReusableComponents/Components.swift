@@ -16,5 +16,15 @@ class Components {
         label.textAlignment = textAlignment
         return label
     }
+    
+    static func imageView(contentMode: UIView.ContentMode = .scaleAspectFill, cornerRadius: CGFloat = 0) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.contentMode = contentMode
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = cornerRadius
+        return imageView
+    }
+    
+    
 }
 

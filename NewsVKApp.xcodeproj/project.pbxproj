@@ -10,10 +10,12 @@
 		1D930E8E2D01BF6E0011AD49 /* VKID in Frameworks */ = {isa = PBXBuildFile; productRef = 1D930E8D2D01BF6E0011AD49 /* VKID */; };
 		1D930E902D01BF6E0011AD49 /* VKIDCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1D930E8F2D01BF6E0011AD49 /* VKIDCore */; };
 		1DABA6462D0321EA00650148 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 1DABA6452D0321EA00650148 /* Kingfisher */; };
+		1DE261752D07705600788B8C /* SavedNews+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE261742D07705600788B8C /* SavedNews+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1D930D8A2D0081570011AD49 /* NewsVKApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewsVKApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DE261742D07705600788B8C /* SavedNews+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SavedNews+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -54,6 +56,7 @@
 		1D930D812D0081570011AD49 = {
 			isa = PBXGroup;
 			children = (
+				1DE261742D07705600788B8C /* SavedNews+CoreDataProperties.swift */,
 				1D930D8C2D0081570011AD49 /* NewsVKApp */,
 				1D930D8B2D0081570011AD49 /* Products */,
 			);
@@ -148,6 +151,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DE261752D07705600788B8C /* SavedNews+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

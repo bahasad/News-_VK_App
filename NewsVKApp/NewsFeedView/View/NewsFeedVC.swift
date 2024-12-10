@@ -81,7 +81,7 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     private lazy var collectionView: UICollectionView = {
         $0.delegate = self
         $0.dataSource = self
-        $0.register(NewsFeedCollectionViewCell.self, forCellWithReuseIdentifier: NewsFeedCollectionViewCell.reuseId)
+        $0.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseId)
         return $0
     }(UICollectionView(frame: .zero, collectionViewLayout: setLayout()))
     
@@ -197,6 +197,7 @@ extension NewsFeedVC: UISearchBarDelegate {
 }
 
 extension NewsFeedVC {
+    
     func updateNewsFeed(with data: [NewsFeedItems]) {
         print("Fetched \(data.count) news to display")
         DispatchQueue.main.async {
@@ -217,25 +218,40 @@ extension NewsFeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsFeedCollectionViewCell.reuseId, for: indexPath) as! NewsFeedCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseId, for: indexPath) as! CollectionViewCell
         if let item = presenter?.news?[indexPath.row] {
             cell.setCellData(item: item)
+            let imageUrl = item.imageUrl
+            presenter?.fetchImage(for: imageUrl) {  data in
+                guard let imageData = data, let image = UIImage(data: imageData) else { return }
+                cell.imageView.image = image
+            }
+            cell.starBtn.isBookmarked = presenter?.fetchAllFavouriteNews().contains(where: {$0.id == item.uuid}) ?? false
         }
         cell.delegate = self
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let selectedNewsItem = presenter?.news?[indexPath.row] else { return }
+        let detailsVC = NewsDetailsBuilder.build(newsItem: selectedNewsItem)
+        navigationController?.pushViewController(detailsVC, animated: true)
+    }
+    
     
 }
-extension NewsFeedVC: NewsFeedCollectionViewCellDelegate {
-    func didTapStarButton(on cell: NewsFeedCollectionViewCell) {
+extension NewsFeedVC: CollectionViewCellDelegate {
+    func didTapStarButton(on cell: CollectionViewCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
         guard let newsItem = presenter?.news?[indexPath.row] else { return }
         print("Star btn tapped in View Controller for news: \(newsItem.title)")
         //here i need to pass this event to presenter
         presenter?.handleStarButtonTap(for: newsItem)
+        //here I need to toggle state of the star btn
+        let isBookmarked = cell.starBtn.isBookmarked
+        cell.starBtn.isBookmarked = !isBookmarked
     }
 }
-//scrollview, bookmark, uiactivityindicator
+//scrollview, - to do item (for the whole page to be scrollabel, not only the collection view!
 
 

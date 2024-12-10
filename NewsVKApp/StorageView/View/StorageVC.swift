@@ -56,10 +56,11 @@ extension StorageVC:  UICollectionViewDataSource {
         cell.descLabel.text = item?.desc
         cell.dateLabel.text = Utilities.formatDate(from: item?.publishedAt)
         cell.webSiteLabel.text = Utilities.extractDomain(from: item?.url)
-        if let url = URL(string: item?.imageUrl ?? "") {
-            cell.imageView.kf.setImage(with: url, placeholder: UIImage(named: "404notFound"))
-        } else {
-            cell.imageView.image = UIImage(named: "imageForPlaceholder")
+        cell.imageView.image = UIImage(systemName: "photo")
+        let imageUrl = item?.imageUrl ?? ""
+        presenter?.fetchImage(for: imageUrl) {  data in
+            guard let imageData = data, let image = UIImage(data: imageData) else { return }
+            cell.imageView.image = image
         }
         cell.delegate = self
         return cell

@@ -90,11 +90,11 @@ class StorageCollectionViewCell: UICollectionViewCell {
         descLabel.text = item.desc
         dateLabel.text = Utilities.formatDate(from: item.publishedAt)
         webSiteLabel.text = Utilities.extractDomain(from: item.url)
-        if let url = URL(string: item.imageUrl ?? "") {
-            imageView.kf.setImage(with: url, placeholder: UIImage(named: "404notFound"))
-        } else {
-            imageView.image = UIImage(named: "imageForPlaceholder")
-        }
+//        if let url = URL(string: item.imageUrl ?? "") {
+//            imageView.kf.setImage(with: url, placeholder: UIImage(named: "404notFound"))
+//        } else {
+//            imageView.image = UIImage(named: "imageForPlaceholder")
+//        }
     }
     
     @objc func starButtonTapped() {

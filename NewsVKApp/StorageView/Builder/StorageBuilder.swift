@@ -12,7 +12,8 @@ class StorageBuilder {
     static func build() -> UIViewController {
         let view = StorageVC()
         let dataManager = DataManager()
-        let presenter = StoragePresenter(view: view, dataManager: dataManager)
+        let imageCacheManager = ImageCacheManager.shared
+        let presenter = StoragePresenter(view: view, dataManager: dataManager, imageCacheManager: imageCacheManager)
         view.presenter = presenter
         return view
     }

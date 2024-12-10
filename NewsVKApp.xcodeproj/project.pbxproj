@@ -6,8 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1D930E8E2D01BF6E0011AD49 /* VKID in Frameworks */ = {isa = PBXBuildFile; productRef = 1D930E8D2D01BF6E0011AD49 /* VKID */; };
+		1D930E902D01BF6E0011AD49 /* VKIDCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1D930E8F2D01BF6E0011AD49 /* VKIDCore */; };
+		1DABA6462D0321EA00650148 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 1DABA6452D0321EA00650148 /* Kingfisher */; };
+		1DE261752D07705600788B8C /* SavedNews+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE261742D07705600788B8C /* SavedNews+CoreDataProperties.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1D930D8A2D0081570011AD49 /* NewsVKApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewsVKApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DE261742D07705600788B8C /* SavedNews+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SavedNews+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +44,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DABA6462D0321EA00650148 /* Kingfisher in Frameworks */,
+				1D930E8E2D01BF6E0011AD49 /* VKID in Frameworks */,
+				1D930E902D01BF6E0011AD49 /* VKIDCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,6 +56,7 @@
 		1D930D812D0081570011AD49 = {
 			isa = PBXGroup;
 			children = (
+				1DE261742D07705600788B8C /* SavedNews+CoreDataProperties.swift */,
 				1D930D8C2D0081570011AD49 /* NewsVKApp */,
 				1D930D8B2D0081570011AD49 /* Products */,
 			);
@@ -78,6 +90,9 @@
 			);
 			name = NewsVKApp;
 			packageProductDependencies = (
+				1D930E8D2D01BF6E0011AD49 /* VKID */,
+				1D930E8F2D01BF6E0011AD49 /* VKIDCore */,
+				1DABA6452D0321EA00650148 /* Kingfisher */,
 			);
 			productName = NewsVKApp;
 			productReference = 1D930D8A2D0081570011AD49 /* NewsVKApp.app */;
@@ -107,6 +122,10 @@
 			);
 			mainGroup = 1D930D812D0081570011AD49;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1D930E8C2D01BF6D0011AD49 /* XCRemoteSwiftPackageReference "vkid-ios-sdk" */,
+				1DABA6442D0321EA00650148 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1D930D8B2D0081570011AD49 /* Products */;
 			projectDirPath = "";
@@ -132,6 +151,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1DE261752D07705600788B8C /* SavedNews+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +351,43 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1D930E8C2D01BF6D0011AD49 /* XCRemoteSwiftPackageReference "vkid-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/VKCOM/vkid-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.0;
+			};
+		};
+		1DABA6442D0321EA00650148 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1D930E8D2D01BF6E0011AD49 /* VKID */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1D930E8C2D01BF6D0011AD49 /* XCRemoteSwiftPackageReference "vkid-ios-sdk" */;
+			productName = VKID;
+		};
+		1D930E8F2D01BF6E0011AD49 /* VKIDCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1D930E8C2D01BF6D0011AD49 /* XCRemoteSwiftPackageReference "vkid-ios-sdk" */;
+			productName = VKIDCore;
+		};
+		1DABA6452D0321EA00650148 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1DABA6442D0321EA00650148 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1D930D822D0081570011AD49 /* Project object */;
 }

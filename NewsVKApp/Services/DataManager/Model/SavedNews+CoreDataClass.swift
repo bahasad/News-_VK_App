@@ -34,9 +34,8 @@ extension SavedNews : Identifiable {
 }
 
 extension SavedNews {
+    
     func deleteFavouriteNews(){
-//        managedObjectContext?.delete(self)
-//        try? managedObjectContext?.save()
         guard let context = managedObjectContext else {
             print("error: managedobject context is nil")
             return

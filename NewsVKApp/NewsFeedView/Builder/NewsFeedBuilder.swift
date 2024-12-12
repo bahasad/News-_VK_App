@@ -11,10 +11,11 @@ class NewsFeedBuilder {
     
     static func build() -> UIViewController {
         let view = NewsFeedVC()
-        let networkService = NetworkManager()
+        let networkService = NetworkManager.shared
         let dataManager = DataManager()
         let imageCacheManager = ImageCacheManager.shared
-        let presenter = NewsFeedPresenter(view: view, networkService: networkService, dataManager: dataManager, imageCacheManager: imageCacheManager)
+        let keychainManager = KeychainManager.shared
+        let presenter = NewsFeedPresenter(view: view, networkService: networkService, dataManager: dataManager, imageCacheManager: imageCacheManager, keychainManager: keychainManager)
         view.presenter = presenter
         return view
     }

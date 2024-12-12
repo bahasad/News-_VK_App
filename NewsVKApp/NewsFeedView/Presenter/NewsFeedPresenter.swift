@@ -9,30 +9,36 @@ import Foundation
 
 protocol NewsFeedPresenterProtocol: AnyObject {
     
-    init(view: NewsFeedVCProtocol, networkService: NetworkServiceProtocol, dataManager: DataManager, imageCacheManager: ImageCacheManager)
+    init(view: NewsFeedVCProtocol, networkService: NetworkServiceProtocol, dataManager: DataManager, imageCacheManager: ImageCacheManager, keychainManager: KeychainManager)
     func getAllNews()
     func getNewsBySearchWord(searchWord: String)
     var news: [NewsFeedItems]? { get set }
     func handleStarButtonTap(for newsItem: NewsFeedItems)
     func fetchAllFavouriteNews() -> [SavedNews]
     func fetchImage(for urlString: String, completion: @escaping (Data?) -> Void)
+    func deleteTokenFromKeychain()
+    func retrieveTokenFromKeychain() -> String?
     
 }
-
+         
 class NewsFeedPresenter: NewsFeedPresenterProtocol {
     
     weak var view: NewsFeedVCProtocol?
     let networkService: NetworkServiceProtocol
     var news: [NewsFeedItems]?
+    var vkUserItems: [VKUserDataItems]?
     let dataManager: DataManager
     let imageCacheManager: ImageCacheManager
+    let keychainManager: KeychainManager
     
-    required init(view: NewsFeedVCProtocol, networkService: any NetworkServiceProtocol, dataManager: DataManager, imageCacheManager: ImageCacheManager) {
+    required init(view: NewsFeedVCProtocol, networkService: any NetworkServiceProtocol, dataManager: DataManager, imageCacheManager: ImageCacheManager, keychainManager: KeychainManager) {
         self.view = view
         self.networkService = networkService
         self.dataManager = dataManager
         self.imageCacheManager = imageCacheManager
+        self.keychainManager = keychainManager
         getAllNews()
+        fetchUserNameAndAvatar()
     }
     
     func getAllNews() {
@@ -89,12 +95,40 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
         }
     }
     
+    func fetchUserNameAndAvatar() {
+        let token = keychainManager.retrieveTokenFromKeychain() ?? ""
+        Task {
+            do {
+                vkUserItems = try await networkService.fetchUserNameAndAvatarFromVK(token: token)
+                DispatchQueue.main.async { [weak self] in
+                    self?.view?.updateVKUserDetails(with: self?.vkUserItems ?? [])
+                }
+            } catch CustomError.invalidURL {
+                print("invalid URL")
+            } catch CustomError.invalidResponse {
+                print("invalid Response")
+            } catch CustomError.invalidData {
+                print("invalid Data")
+            } catch {
+                print("unexpected error")
+            }
+        }
+    }
+    
 }
 
 extension NewsFeedPresenter {
     
     func fetchAllFavouriteNews() -> [SavedNews] {
         return dataManager.fetchAllFavouriteNews()
+    }
+    
+    func deleteTokenFromKeychain() {
+        keychainManager.deleteTokenFromKeychain()
+    }
+    
+    func retrieveTokenFromKeychain() -> String? {
+        return KeychainManager.shared.retrieveTokenFromKeychain()
     }
     
 }

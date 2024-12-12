@@ -6,17 +6,18 @@
 //
 
 import UIKit
+import Kingfisher
 
 protocol NewsFeedVCProtocol: AnyObject {
     
     func updateNewsFeed(with data: [NewsFeedItems])
+    func updateVKUserDetails(with data: [VKUserDataItems])
 }
 
 class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     
     
     var presenter: NewsFeedPresenterProtocol?
-    let userNameSigned = "Имя пользователя"
     
     private lazy var userImage: UIImageView = {
         $0.contentMode = .scaleAspectFit
@@ -28,17 +29,16 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     
     private lazy var userName: UILabel = {
         $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-        $0.text = userNameSigned
         $0.numberOfLines = 0
         return $0
     }(UILabel())
     
-    private lazy var menuIcon: UIImageView = {
-        $0.contentMode = .scaleAspectFit
-        $0.clipsToBounds = true
-        $0.image = UIImage(named: "menuIcon")
+    private lazy var menuIcon: UIButton = {
+        $0.setImage(UIImage(named: "menuIcon"), for: .normal)
+        $0.menu = createContextMenu()
+        $0.showsMenuAsPrimaryAction = true
         return $0
-    }(UIImageView())
+    }(UIButton())
     
     private lazy var searchBar: UISearchBar = {
         $0.placeholder = "Search"
@@ -75,6 +75,7 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     private lazy var activityIndicator: UIActivityIndicatorView = {
         $0.color = .gray
         $0.hidesWhenStopped = true
+        $0.translatesAutoresizingMaskIntoConstraints  = false
         return $0
     }(UIActivityIndicatorView(style: .large))
     
@@ -82,8 +83,28 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
         $0.delegate = self
         $0.dataSource = self
         $0.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseId)
+        $0.isScrollEnabled = false
         return $0
     }(UICollectionView(frame: .zero, collectionViewLayout: setLayout()))
+    
+    private lazy var scrollView: UIScrollView = {
+        $0.isScrollEnabled = true
+        $0.showsVerticalScrollIndicator = false
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        return $0
+    }(UIScrollView(frame: view.frame))
+    
+    private lazy var scrollContent: UIView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.backgroundColor = .white
+        return $0
+    }(UIView())
+    
+    private lazy var headerView: UIView = {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.backgroundColor = .white
+        return $0
+    }(UIView())
     
     
     override func viewDidLoad() {
@@ -96,47 +117,103 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     }
     
     private func addSubviews() {
-        [ userImage, userName, menuIcon, searchBar, headerLabel, collectionView, activityIndicator ].forEach {
-            view.addSubview($0)
+        
+        view.addSubview(scrollView)
+        view.addSubview(activityIndicator)
+        scrollView.addSubview(scrollContent)
+        
+        [ userImage, userName, menuIcon, searchBar].forEach {
+            headerView.addSubview($0)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        [ headerView, headerLabel, collectionView ].forEach {
+            scrollContent.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
     }
     
+    
+    private var collectionViewHeightConstraint: NSLayoutConstraint?
+    
     private func setConstraints() {
+        collectionViewHeightConstraint = collectionView.heightAnchor.constraint(equalToConstant: 0)
+        collectionViewHeightConstraint?.isActive = true
+        
         NSLayoutConstraint.activate([
             
             userImage.widthAnchor.constraint(equalToConstant: 35),
             userImage.heightAnchor.constraint(equalToConstant: 35),
-            userImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            userImage.centerYAnchor.constraint(equalTo: menuIcon.centerYAnchor),
+            userImage.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 25),
+            userImage.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 10),
             
-            menuIcon.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            menuIcon.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -25),
             menuIcon.widthAnchor.constraint(equalToConstant: 24),
             menuIcon.heightAnchor.constraint(equalToConstant: 24),
-            menuIcon.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            menuIcon.centerYAnchor.constraint(equalTo: userImage.centerYAnchor),
             
             userName.leadingAnchor.constraint(equalTo: userImage.trailingAnchor, constant: 10),
             userName.trailingAnchor.constraint(equalTo: menuIcon.leadingAnchor, constant: -10),
             userName.centerYAnchor.constraint(equalTo: userImage.centerYAnchor),
             
             searchBar.topAnchor.constraint(equalTo: userImage.bottomAnchor, constant: 15),
-            searchBar.leadingAnchor.constraint(equalTo: userImage.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: menuIcon.trailingAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 25),
+            searchBar.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -25),
             searchBar.heightAnchor.constraint(equalToConstant: 40),
             
-            headerLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 25),
-            headerLabel.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor),
-            headerLabel.trailingAnchor.constraint(equalTo: searchBar.trailingAnchor),
+            headerView.topAnchor.constraint(equalTo: scrollContent.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: scrollContent.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: scrollContent.trailingAnchor),
+            headerView.bottomAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 15),
             
-            collectionView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 25),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            headerLabel.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
+            headerLabel.leadingAnchor.constraint(equalTo: scrollContent.leadingAnchor, constant: 25),
+            headerLabel.trailingAnchor.constraint(equalTo: scrollContent.trailingAnchor, constant: -25),
+            
+            collectionView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 20),
+            collectionView.leadingAnchor.constraint(equalTo: scrollContent.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: scrollContent.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: scrollContent.bottomAnchor),
             
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            
+            scrollContent.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContent.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            scrollContent.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            scrollContent.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            scrollContent.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
         ])
     }
+    
+    private func createContextMenu() -> UIMenu {
+        let logOutAction = UIAction(title: "Log Out", image: UIImage(systemName: "arrow.backward")) { [weak self] _ in
+            self?.handleLogOut()
+        }
+        
+        let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gearshape")) { _ in
+            print("Settings")
+        }
+        
+        let editProfileAction = UIAction(title: "Edit Profile", image: UIImage(systemName: "person.crop.circle")) { _ in
+            print("Edit Profile")
+        }
+        return UIMenu(title: "", children: [editProfileAction, settingsAction, logOutAction])
+    }
+    
+    private func handleLogOut() {
+        print("Log out selected")
+        UserDefaults.standard.set(false, forKey: "isLogin")
+        print("user defaults for isLogin set to false")
+        presenter?.deleteTokenFromKeychain()
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "routeVC"), object: nil, userInfo: ["vc": WindowCase.login])
+    }
+    
     
     private func getAllItems() {
         showLoadingIndicator()
@@ -156,14 +233,21 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 10
         layout.minimumLineSpacing = 20
-        layout.sectionInset = UIEdgeInsets(top: 10 , left: 10, bottom: 10, right: 10)
-        //layout.itemSize = CGSize(width: 100, height: 500)
-        let screenWidth = UIScreen.main.bounds.width
-        let cellWidth = (screenWidth - 50)
-        layout.itemSize = CGSize(width: cellWidth, height: 500)
-        
+        layout.itemSize = CGSize(width: UIScreen.main.bounds.width - 50, height: 500)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         return layout
     }
+    
+    
+    //
+    //    func setLayout() -> UICollectionViewFlowLayout {
+    //        let layout = UICollectionViewFlowLayout()
+    //        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+    //        layout.minimumLineSpacing = 10
+    //        layout.minimumInteritemSpacing = 10
+    //        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+    //        return layout
+    //    }
     
     private func showLoadingIndicator() {
         DispatchQueue.main.async {
@@ -203,8 +287,47 @@ extension NewsFeedVC {
         DispatchQueue.main.async {
             self.hideLoadingIndicator()
             self.collectionView.reloadData()
+            self.collectionView.layoutIfNeeded()
+            self.updateCollectionViewHeight()
         }
     }
+    func updateVKUserDetails(with data: [VKUserDataItems]) {
+        DispatchQueue.main.async {
+            self.userName.text = (data.first?.firstName ?? "") + " " + (data.first?.lastName ?? "")
+            if let photoURLString = data.first?.photo200, let photoURL = URL(string: photoURLString) {
+                self.userImage.kf.setImage(
+                    with: photoURL,
+                    placeholder: UIImage(named: "noPhoto"),
+                    options: [
+                        .transition(.fade(0.2)),
+                        .cacheOriginalImage
+                    ],
+                    progressBlock: { receivedSize, totalSize in
+                        print("Loading progress: \(receivedSize) / \(totalSize)")
+                    },
+                    completionHandler: { result in
+                        switch result {
+                        case .success(let value):
+                            print("Successfully loaded image: \(value.image)")
+                        case .failure(let error):
+                            print("Failed to load image: \(error.localizedDescription)")
+                        }
+                    }
+                )
+            } else {
+                print("No photo URL available")
+                self.userImage.image = UIImage(named: "noPhoto")
+            }
+        }
+    }
+    
+    private func updateCollectionViewHeight() {
+        self.collectionViewHeightConstraint?.constant = self.collectionView.contentSize.height
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
 }
 
 extension NewsFeedVC: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -252,6 +375,7 @@ extension NewsFeedVC: CollectionViewCellDelegate {
         cell.starBtn.isBookmarked = !isBookmarked
     }
 }
-//scrollview, - to do item (for the whole page to be scrollabel, not only the collection view!
+
+
 
 

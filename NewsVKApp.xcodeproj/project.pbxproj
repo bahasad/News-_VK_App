@@ -10,7 +10,7 @@
 		1D930E8E2D01BF6E0011AD49 /* VKID in Frameworks */ = {isa = PBXBuildFile; productRef = 1D930E8D2D01BF6E0011AD49 /* VKID */; };
 		1D930E902D01BF6E0011AD49 /* VKIDCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1D930E8F2D01BF6E0011AD49 /* VKIDCore */; };
 		1DABA6462D0321EA00650148 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 1DABA6452D0321EA00650148 /* Kingfisher */; };
-		1DE2625A2D08312F00788B8C /* SavedNews+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE262572D08312F00788B8C /* SavedNews+CoreDataClass.swift */; };
+		1DE263AC2D0AFE8200788B8C /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1DE263AB2D0AFE8200788B8C /* KeychainSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +46,7 @@
 			files = (
 				1DABA6462D0321EA00650148 /* Kingfisher in Frameworks */,
 				1D930E8E2D01BF6E0011AD49 /* VKID in Frameworks */,
+				1DE263AC2D0AFE8200788B8C /* KeychainSwift in Frameworks */,
 				1D930E902D01BF6E0011AD49 /* VKIDCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -93,6 +94,7 @@
 				1D930E8D2D01BF6E0011AD49 /* VKID */,
 				1D930E8F2D01BF6E0011AD49 /* VKIDCore */,
 				1DABA6452D0321EA00650148 /* Kingfisher */,
+				1DE263AB2D0AFE8200788B8C /* KeychainSwift */,
 			);
 			productName = NewsVKApp;
 			productReference = 1D930D8A2D0081570011AD49 /* NewsVKApp.app */;
@@ -125,6 +127,7 @@
 			packageReferences = (
 				1D930E8C2D01BF6D0011AD49 /* XCRemoteSwiftPackageReference "vkid-ios-sdk" */,
 				1DABA6442D0321EA00650148 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				1DE263AA2D0AFE8200788B8C /* XCRemoteSwiftPackageReference "keychain-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1D930D8B2D0081570011AD49 /* Products */;
@@ -151,7 +154,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1DE2625A2D08312F00788B8C /* SavedNews+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,6 +371,14 @@
 				minimumVersion = 8.1.1;
 			};
 		};
+		1DE263AA2D0AFE8200788B8C /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -386,6 +396,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1DABA6442D0321EA00650148 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		1DE263AB2D0AFE8200788B8C /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1DE263AA2D0AFE8200788B8C /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -10,10 +10,13 @@ import Foundation
 protocol NetworkServiceProtocol {
     func fetchAllNews() async throws -> [NewsFeedItems]
     func fetchNewsBySearchWord(searchWord: String) async throws -> [NewsFeedItems]
+    func fetchUserNameAndAvatarFromVK(token: String) async throws -> [VKUserDataItems]
 }
 
 class NetworkManager: NetworkServiceProtocol {
     
+    static let shared = NetworkManager()
+    private init() {}
     
     func fetchAllNews() async throws -> [NewsFeedItems] {
         
@@ -92,6 +95,41 @@ class NetworkManager: NetworkServiceProtocol {
             throw CustomError.invalidData
         }
         return result.data
+    }
+    
+    func fetchUserNameAndAvatarFromVK(token: String) async throws -> [VKUserDataItems] {
+        //https://api.vk.com/method/users.get?fields=photo_200,first_name,last_name&access_token=YOUR_ACCESS_TOKEN&v=5.131
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "api.vk.com"
+        urlComponents.path = "/method/users.get"
+        
+        urlComponents.queryItems = [
+            URLQueryItem(name: "fields", value: "photo_200,first_name,last_name"),
+            URLQueryItem(name: "access_token", value: token),
+            URLQueryItem(name: "v", value: "5.131")
+        ]
+        
+        guard let url = urlComponents.url else {
+            throw CustomError.invalidURL
+        }
+        
+        let urlRequest = URLRequest(url: url)
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw CustomError.invalidResponse
+        }
+        let decoder = JSONDecoder()
+        let result: VKUserDataItemsResponse
+        do {
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            result = try decoder.decode(VKUserDataItemsResponse.self, from: data)
+        } catch {
+            throw CustomError.invalidData
+        }
+        return result.response
     }
     
 }

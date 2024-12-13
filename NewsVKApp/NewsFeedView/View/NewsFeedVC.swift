@@ -207,11 +207,23 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     }
     
     private func handleLogOut() {
-        print("Log out selected")
-        UserDefaults.standard.set(false, forKey: "isLogin")
-        print("user defaults for isLogin set to false")
-        presenter?.deleteTokenFromKeychain()
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "routeVC"), object: nil, userInfo: ["vc": WindowCase.login])
+        
+        let alertController = UIAlertController(title: "Выйти", message: "Хотите выйти из профиля?", preferredStyle: .alert)
+        
+        let confirmation = UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
+            print("Log out selected")
+            UserDefaults.standard.set(false, forKey: "isLogin")
+            print("user defaults for isLogin set to false")
+            self?.presenter?.deleteTokenFromKeychain()
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "routeVC"), object: nil, userInfo: ["vc": WindowCase.login])
+        }
+        
+        let cancelAction = UIAlertAction(title: "Назад", style: .cancel, handler: nil)
+        
+        alertController.addAction(confirmation)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     

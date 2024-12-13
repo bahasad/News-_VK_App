@@ -11,6 +11,7 @@ protocol NetworkServiceProtocol {
     func fetchAllNews() async throws -> [NewsFeedItems]
     func fetchNewsBySearchWord(searchWord: String) async throws -> [NewsFeedItems]
     func fetchUserNameAndAvatarFromVK(token: String) async throws -> [VKUserDataItems]
+    func fetchNewsFromVK(token: String) async throws -> [VKWallItems]
 }
 
 class NetworkManager: NetworkServiceProtocol {
@@ -98,6 +99,7 @@ class NetworkManager: NetworkServiceProtocol {
     }
     
     func fetchUserNameAndAvatarFromVK(token: String) async throws -> [VKUserDataItems] {
+        
         //https://api.vk.com/method/users.get?fields=photo_200,first_name,last_name&access_token=YOUR_ACCESS_TOKEN&v=5.131
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
@@ -130,6 +132,43 @@ class NetworkManager: NetworkServiceProtocol {
             throw CustomError.invalidData
         }
         return result.response
+    }
+    
+    func fetchNewsFromVK(token: String) async throws -> [VKWallItems] {
+        
+        //https://api.vk.com/method/wall.get?owner_id=87492249&access_token=YOUR_ACCESS_TOKEN&v=5.131
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "api.vk.com"
+        urlComponents.path = "/method/wall.get"
+        
+        urlComponents.queryItems = [
+            URLQueryItem(name: "owner_id", value: "87492249"),
+            URLQueryItem(name: "count", value: "10"),
+            URLQueryItem(name: "access_token", value: token),
+            URLQueryItem(name: "v", value: "5.131")
+        ]
+        
+        guard let url = urlComponents.url else {
+            throw CustomError.invalidURL
+        }
+        
+        let urlRequest = URLRequest(url: url)
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw CustomError.invalidResponse
+        }
+        let decoder = JSONDecoder()
+        let result: VKWallResponse
+        do {
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            result = try decoder.decode(VKWallResponse.self, from: data)
+        } catch {
+            throw CustomError.invalidData
+        }
+        return result.response.items
     }
     
 }

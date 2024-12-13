@@ -18,7 +18,7 @@ protocol NewsFeedPresenterProtocol: AnyObject {
     func fetchImage(for urlString: String, completion: @escaping (Data?) -> Void)
     func deleteTokenFromKeychain()
     func retrieveTokenFromKeychain() -> String?
-    
+    func clearImageCache()
 }
          
 class NewsFeedPresenter: NewsFeedPresenterProtocol {
@@ -45,7 +45,7 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
         Task {
             do {
                 news = try await networkService.fetchAllNews()
-                print("Fetched it: \(String(describing: news))")
+                //print("Fetched it: \(String(describing: news))")
                 DispatchQueue.main.async { [weak self] in
                     self?.view?.updateNewsFeed(with: self?.news ?? [])
                 }
@@ -114,6 +114,10 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
             }
         }
     }
+    
+    func clearImageCache() {
+            imageCacheManager.clearCache()
+        }
     
 }
 

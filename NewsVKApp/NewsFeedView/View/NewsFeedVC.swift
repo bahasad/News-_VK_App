@@ -18,28 +18,13 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     
     
     var presenter: NewsFeedPresenterProtocol?
+    let components = Components()
     
-    private lazy var userImage: UIImageView = {
-        $0.contentMode = .scaleAspectFit
-        $0.clipsToBounds = true
-        $0.backgroundColor = .lightGray
-        $0.layer.cornerRadius = 35 / 2
-        return $0
-    }(UIImageView())
-    
-    private lazy var userName: UILabel = {
-        $0.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-        $0.numberOfLines = 0
-        return $0
-    }(UILabel())
-    
-    private lazy var menuIcon: UIButton = {
-        $0.setImage(UIImage(named: "menuIcon"), for: .normal)
-        $0.menu = createContextMenu()
-        $0.showsMenuAsPrimaryAction = true
-        return $0
-    }(UIButton())
-    
+    private lazy var userImage = components.createImageView(contentMode: .scaleAspectFit, clipsToBounds: true, cornerRadius: 35/2)
+    private lazy var userName = Components.label(size: 12, numberOfLines: 0, weight: .bold)
+    private lazy var menuIcon = components.createBtnForMenuIcon(menu: createContextMenu())
+    private lazy var headerLabel = Components.label(size: 34, weight: .bold)
+    private lazy var activityIndicator = components.createActivityIndicator()
     private lazy var searchBar: UISearchBar = {
         $0.placeholder = "Search"
         $0.searchBarStyle = .minimal
@@ -64,21 +49,6 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
         ])
         return $0
     }(UISearchBar())
-    
-    private lazy var headerLabel: UILabel = {
-        $0.font = UIFont.systemFont(ofSize: 34, weight: .bold)
-        $0.text = "Новости"
-        $0.numberOfLines = 0
-        return $0
-    }(UILabel())
-    
-    private lazy var activityIndicator: UIActivityIndicatorView = {
-        $0.color = .gray
-        $0.hidesWhenStopped = true
-        $0.translatesAutoresizingMaskIntoConstraints  = false
-        return $0
-    }(UIActivityIndicatorView(style: .large))
-    
     private lazy var collectionView: UICollectionView = {
         $0.delegate = self
         $0.dataSource = self
@@ -86,36 +56,27 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
         $0.isScrollEnabled = false
         return $0
     }(UICollectionView(frame: .zero, collectionViewLayout: setLayout()))
-    
-    private lazy var scrollView: UIScrollView = {
-        $0.isScrollEnabled = true
-        $0.showsVerticalScrollIndicator = false
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        return $0
-    }(UIScrollView(frame: view.frame))
-    
-    private lazy var scrollContent: UIView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.backgroundColor = .white
-        return $0
-    }(UIView())
-    
-    private lazy var headerView: UIView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.backgroundColor = .white
-        return $0
-    }(UIView())
+    private lazy var scrollView = components.createScrollView(frame: view.frame)
+    private lazy var scrollContent = components.createView()
+    private lazy var headerView = components.createView()
+    private lazy var refreshControl = UIRefreshControl()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        headerLabel.text = "Новости"
         getAllItems()
         addSubviews()
         setConstraints()
-        
+        setupRefreshControl()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        collectionView.reloadData()
+    }
+
     private func addSubviews() {
         
         view.addSubview(scrollView)
@@ -207,21 +168,29 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     }
     
     private func handleLogOut() {
-        print("Log out selected")
-        UserDefaults.standard.set(false, forKey: "isLogin")
-        print("user defaults for isLogin set to false")
-        presenter?.deleteTokenFromKeychain()
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "routeVC"), object: nil, userInfo: ["vc": WindowCase.login])
+        
+        let alertController = UIAlertController(title: "Выйти", message: "Хотите выйти из профиля?", preferredStyle: .alert)
+        
+        let confirmation = UIAlertAction(title: "Да", style: .destructive) { [weak self] _ in
+            print("Log out selected")
+            UserDefaults.standard.set(false, forKey: "isLogin")
+            print("user defaults for isLogin set to false")
+            self?.presenter?.deleteTokenFromKeychain()
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "routeVC"), object: nil, userInfo: ["vc": WindowCase.login])
+        }
+        
+        let cancelAction = UIAlertAction(title: "Назад", style: .cancel, handler: nil)
+        
+        alertController.addAction(confirmation)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     
     private func getAllItems() {
-        showLoadingIndicator()
+        components.showLoadingIndicator(activityIndicator: self.activityIndicator, collectionView: self.collectionView)
         presenter?.getAllNews()
-        presenter?.news?.forEach({ item in
-            print(item.title)
-            print(item.description)
-        })
     }
     
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
@@ -249,19 +218,20 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
     //        return layout
     //    }
     
-    private func showLoadingIndicator() {
-        DispatchQueue.main.async {
-            self.activityIndicator.startAnimating()
-            self.collectionView.isHidden = true
+    
+    private func setupRefreshControl() {
+        self.scrollView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(handleRefreshOnScrollView), for: .valueChanged)
+    }
+    
+    @objc func handleRefreshOnScrollView() {
+        presenter?.clearImageCache()
+        presenter?.getAllNews()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.refreshControl.endRefreshing()
         }
     }
     
-    private func hideLoadingIndicator() {
-        DispatchQueue.main.async {
-            self.activityIndicator.stopAnimating()
-            self.collectionView.isHidden = false
-        }
-    }
 }
 
 extension NewsFeedVC: UISearchBarDelegate {
@@ -272,7 +242,7 @@ extension NewsFeedVC: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text {
-            showLoadingIndicator()
+            components.showLoadingIndicator(activityIndicator: activityIndicator, collectionView: collectionView)
             presenter?.getNewsBySearchWord(searchWord: searchText)
         }
         searchBar.resignFirstResponder()
@@ -285,7 +255,8 @@ extension NewsFeedVC {
     func updateNewsFeed(with data: [NewsFeedItems]) {
         print("Fetched \(data.count) news to display")
         DispatchQueue.main.async {
-            self.hideLoadingIndicator()
+            self.components.hideLoadingIndicator(activityIndicator: self.activityIndicator, collectionView: self.collectionView)
+            self.refreshControl.endRefreshing()
             self.collectionView.reloadData()
             self.collectionView.layoutIfNeeded()
             self.updateCollectionViewHeight()

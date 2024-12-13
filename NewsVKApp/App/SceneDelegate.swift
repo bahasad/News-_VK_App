@@ -39,7 +39,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func windowManager(vc: WindowCase) -> UIViewController {
         switch vc {
         case .login:
-            return AuthModuleBuilder.build()
+            return UINavigationController(rootViewController:  StartVC())
+           // return AuthModuleBuilder.build()
         case .home:
             return TabBarController()
         }

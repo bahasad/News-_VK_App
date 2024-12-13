@@ -30,5 +30,15 @@ class Utilities {
         }
     }
     
+    static func formatDateForVKDate(from time: Int?) -> String {
+            guard let time = time else { return "N/A" }
+            let date = Date(timeIntervalSince1970: TimeInterval(time))
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .none
+            formatter.locale = Locale.current
+            return formatter.string(from: date)
+        }
+    
     
 }

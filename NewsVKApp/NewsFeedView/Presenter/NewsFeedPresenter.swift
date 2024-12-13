@@ -45,7 +45,7 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
         Task {
             do {
                 news = try await networkService.fetchAllNews()
-                print("Fetched it: \(String(describing: news))")
+                //print("Fetched it: \(String(describing: news))")
                 DispatchQueue.main.async { [weak self] in
                     self?.view?.updateNewsFeed(with: self?.news ?? [])
                 }

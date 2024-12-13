@@ -11,7 +11,7 @@ protocol NetworkServiceProtocol {
     func fetchAllNews() async throws -> [NewsFeedItems]
     func fetchNewsBySearchWord(searchWord: String) async throws -> [NewsFeedItems]
     func fetchUserNameAndAvatarFromVK(token: String) async throws -> [VKUserDataItems]
-    func fetchNewsFromVK(token: String) async throws -> [VKWallItems]
+    func fetchNewsFromVK(token: String) async throws -> [VKWallItem]
 }
 
 class NetworkManager: NetworkServiceProtocol {
@@ -45,7 +45,7 @@ class NetworkManager: NetworkServiceProtocol {
         }
         
         if response.statusCode != 200 {
-            print("HTTP Status Code: \(response.statusCode)")
+           // print("HTTP Status Code: \(response.statusCode)")
             throw CustomError.invalidResponse
         }
         
@@ -134,7 +134,7 @@ class NetworkManager: NetworkServiceProtocol {
         return result.response
     }
     
-    func fetchNewsFromVK(token: String) async throws -> [VKWallItems] {
+    func fetchNewsFromVK(token: String) async throws -> [VKWallItem] {
         
         //https://api.vk.com/method/wall.get?owner_id=87492249&access_token=YOUR_ACCESS_TOKEN&v=5.131
         var urlComponents = URLComponents()
@@ -143,7 +143,7 @@ class NetworkManager: NetworkServiceProtocol {
         urlComponents.path = "/method/wall.get"
         
         urlComponents.queryItems = [
-            URLQueryItem(name: "owner_id", value: "87492249"),
+            URLQueryItem(name: "owner_id", value: "-222251367"),
             URLQueryItem(name: "count", value: "10"),
             URLQueryItem(name: "access_token", value: token),
             URLQueryItem(name: "v", value: "5.131")
@@ -158,8 +158,11 @@ class NetworkManager: NetworkServiceProtocol {
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
         guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            print("Invalid response code: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
             throw CustomError.invalidResponse
         }
+        //print("Raw data from VK wall API:")
+        //print(String(data: data, encoding: .utf8) ?? "")
         let decoder = JSONDecoder()
         let result: VKWallResponse
         do {

@@ -29,7 +29,11 @@ class NetworkManager: NetworkServiceProtocol {
         urlComponents.host = "api.thenewsapi.com"
         urlComponents.path = "/v1/news/all"
         
-        urlComponents.queryItems = [ URLQueryItem(name: "api_token", value: "cZNaMjVdxl441OOeOsWsrA9QwhSom7rykLIpmIyK") ]//token with 8777432
+        urlComponents.queryItems = [ URLQueryItem(name: "api_token", value: "cZNaMjVdxl441OOeOsWsrA9QwhSom7rykLIpmIyK"),
+                                     URLQueryItem(name: "locale", value: "us"),
+                                     URLQueryItem(name: "language", value: "en"),
+                                     URLQueryItem(name: "categories", value: "tech,general"),
+        ]//token with 8777432
         //urlComponents.queryItems = [ URLQueryItem(name: "api_token", value: "bqZeKyiP8mTUuy5DKfGLHNZuna6wtfLyrnZ77nEj") ]//token with bak906
         
         guard let url = urlComponents.url else {
@@ -37,6 +41,7 @@ class NetworkManager: NetworkServiceProtocol {
         }
         
         let urlRequest = URLRequest(url: url)
+        print("[Info] URLRequest: \(urlRequest)")
         
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
@@ -45,15 +50,22 @@ class NetworkManager: NetworkServiceProtocol {
         }
         
         if response.statusCode != 200 {
-           // print("HTTP Status Code: \(response.statusCode)")
             throw CustomError.invalidResponse
         }
         
+        if let rawJson = String(data: data, encoding: .utf8) {
+            print("[Info] Raw JSON Data: \n\(rawJson)")
+        } else {
+            print("[Error] Unable to convert data to string")
+        }
+        //print("Raw data from VK wall API:")
+        //print(String(data: data, encoding: .utf8) ?? "")
         let decoder = JSONDecoder()
         let result: NewsFeedResponse
         do {
             decoder.keyDecodingStrategy = .convertFromSnakeCase
             result = try decoder.decode(NewsFeedResponse.self, from: data)
+            print("[Info] Successfully decoded response with \(result.data.count) items")
         } catch {
             throw CustomError.invalidData
         }

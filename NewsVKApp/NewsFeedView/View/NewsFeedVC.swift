@@ -113,9 +113,13 @@ class NewsFeedVC: UIViewController, NewsFeedVCProtocol {
         getAllItems()
         addSubviews()
         setConstraints()
-        
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        collectionView.reloadData()
+    }
+
     private func addSubviews() {
         
         view.addSubview(scrollView)

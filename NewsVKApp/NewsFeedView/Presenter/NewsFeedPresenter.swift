@@ -18,7 +18,7 @@ protocol NewsFeedPresenterProtocol: AnyObject {
     func fetchImage(for urlString: String, completion: @escaping (Data?) -> Void)
     func deleteTokenFromKeychain()
     func retrieveTokenFromKeychain() -> String?
-    
+    func clearImageCache()
 }
          
 class NewsFeedPresenter: NewsFeedPresenterProtocol {
@@ -114,6 +114,10 @@ class NewsFeedPresenter: NewsFeedPresenterProtocol {
             }
         }
     }
+    
+    func clearImageCache() {
+            imageCacheManager.clearCache()
+        }
     
 }
 

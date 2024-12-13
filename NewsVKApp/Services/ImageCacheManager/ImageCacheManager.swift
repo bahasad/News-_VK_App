@@ -22,5 +22,10 @@ class ImageCacheManager {
         return cache.object(forKey: key as NSString) as Data?
     }
     
+    func clearCache() {
+            cache.removeAllObjects()
+            print("[Info] Image cache cleared.")
+        }
+    
 }
 
